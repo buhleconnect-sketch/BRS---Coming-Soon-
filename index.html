@@ -17,7 +17,7 @@
     --white: #ffffff;
     --gray: #8899bb;
     --border: rgba(26,44,91,0.12);
-  }
+  }overflow-x: hidden;
 
   html, body {
     min-height: 100vh;
@@ -25,7 +25,80 @@
     background: var(--light);
     color: var(--navy);
     overflow-x: hidden;
+
+/* Outer container: masks anything outside its bounds */
+.logo-marquee {
+  overflow: hidden;
+  padding: 40px 0;
+  background: var(--light); /* Matches your page background */
+  white-space: nowrap;
+  position: relative;
+  width: 100%;
+}
+
+/* Creates a smooth fade-out effect on the left and right edges using your light theme color */
+.logo-marquee::before,
+.logo-marquee::after {
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  content: "";
+  z-index: 2;
+}
+.logo-marquee::before {
+  left: 0;
+  background: linear-gradient(to right, var(--light), rgba(244, 246, 251, 0));
+}
+.logo-marquee::after {
+  right: 0;
+  background: linear-gradient(to left, var(--light), rgba(244, 246, 251, 0));
+}
+
+/* The track holding the logos */
+.logo-track {
+  display: inline-flex;
+  align-items: center;
+  animation: scrollMarquee 25s linear infinite; /* Change 25s to adjust speed */
+}
+
+/* Individual logo styling */
+.logo-item {
+  padding: 0 40px; /* Space between logos */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-item img {
+  height: 32px; /* Keeps all logo heights uniform */
+  width: auto;
+  filter: grayscale(100%) opacity(50%); /* Blends them beautifully into your gray/navy theme */
+  transition: all 0.3s ease;
+}
+
+/* Pauses the loop when someone hovers over it */
+.logo-marquee:hover .logo-track {
+  animation-play-state: paused;
+}
+
+/* Brings back the original brand colors smoothly on hover */
+.logo-item img:hover {
+  filter: grayscale(0%) opacity(100%);
+}
+
+/* The keyframe animation that moves the track */
+@keyframes scrollMarquee {
+  0% {
+    transform: translateX(0);
   }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* --- End of marquee CSS --- */
+
 
   /* ─── NAV ─── */
   nav {
