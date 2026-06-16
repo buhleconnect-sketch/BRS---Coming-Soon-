@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -672,6 +671,7 @@
   // ── Panels ──
   function openBlog()    { document.getElementById('blogOverlay').classList.add('show');    document.body.style.overflow = 'hidden'; }
   function openContact() { document.getElementById('contactOverlay').classList.add('show'); document.body.style.overflow = 'hidden'; }
+  function closeContact() { closePanel('contactOverlay'); }
   function closePanel(id) { document.getElementById(id).classList.remove('show'); document.body.style.overflow = ''; }
   function handlePanelClick(e, id) { if (e.target === document.getElementById(id)) closePanel(id); }
 
@@ -696,33 +696,35 @@
 </script>
 <script>
 document.getElementById('contactForm').addEventListener('submit', async function(event) {
-  event.preventDefault(); 
+  event.preventDefault();
 
   const submitButton = this.querySelector('.panel-submit');
   const originalButtonText = submitButton.innerText;
   submitButton.innerText = 'Sending...';
   submitButton.disabled = true;
 
-  // Package data as standard form parameters to stay compliant with browser security
-  const searchParams = new URLSearchParams();
-  searchParams.append('name', document.getElementById('senderName').value);
-  searchParams.append('email', document.getElementById('senderEmail').value);
-  searchParams.append('message', document.getElementById('senderMessage').value);
+  // Send as JSON — Make.com webhooks parse this reliably
+  const payload = {
+    name:    document.getElementById('senderName').value,
+    email:   document.getElementById('senderEmail').value,
+    message: document.getElementById('senderMessage').value,
+    submitted_at: new Date().toISOString()
+  };
 
   try {
     await fetch('https://hook.eu1.make.com/552b4wc39852xy417v87s9crgx3kp5ff', {
       method: 'POST',
-      mode: 'no-cors', 
+      mode: 'no-cors',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json'
       },
-      body: searchParams
-    }
+      body: JSON.stringify(payload)
+    });
 
     alert('Thank you! Your message has been sent successfully.');
-    document.getElementById('contactForm').reset(); 
-    if (typeof closeContact === 'function') { 
-      closeContact(); 
+    document.getElementById('contactForm').reset();
+    if (typeof closeContact === 'function') {
+      closeContact();
     }
 
   } catch (error) {
@@ -731,7 +733,7 @@ document.getElementById('contactForm').addEventListener('submit', async function
   } finally {
     submitButton.innerText = originalButtonText;
     submitButton.disabled = false;
-  } 
+  }
 });
 </script>
 
